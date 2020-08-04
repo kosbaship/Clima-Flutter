@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../services/location.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:clima/services/networking.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:clima/screens/location_screen.dart';
+const apiKey = '6d7f94fbcc26d5d34eb975a955454102';
+
 class LoadingScreen extends StatefulWidget {
 
   @override
@@ -13,41 +16,36 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   void initState() {
     super.initState();
-    getLocation();
-    getDataFromNet();
-
-
+    getLocationAndData();
   }
 
-  void getLocation() async {
+  void getLocationAndData() async {
+    var mLat;
+    var mLong;
     Location mLocation = Location();
     await mLocation.getCurrentLocation();
-    print(mLocation.latitude);
-    print(mLocation.longitude);
 
-  }
+    mLat = mLocation.latitude ;
+    mLong = mLocation.latitude ;
 
-  // ignore: missing_return
-  Future<http.Response> getDataFromNet() async{
-    http.Response response = await http.get('https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02');
-    if(response.statusCode == 200){
-      String data = response.body;
-      // dynamic variable
-      var decodedData = jsonDecode(data);
+    NetworkHelper networkHelper = NetworkHelper('https://api.openweathermap.org/data/2.5/weather?lat=$mLat&lon=$mLong&appid=$apiKey&units=metric');
 
-      double temperature = decodedData['main']['temp'];
-      int condition = decodedData['weather'][0]['id'];
-      String cityName = decodedData['name'];
-      print(temperature);
-      print(condition);
-      print(cityName);
-    }else {
-      print(response.statusCode);
-    }
+    var decodedData = await networkHelper.getDataFromNet();
+
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => LocationScreen(currentLocationWeatherData: decodedData,),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: Center(
+        child:  SpinKitFadingFour(
+            color: Colors.white,
+            size: 50.0,
+          ),
+      ),
+    );
   }
 }
