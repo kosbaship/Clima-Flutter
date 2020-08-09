@@ -92,7 +92,12 @@ class _LocationScreenState extends State<LocationScreen> {
                        var comingCityName = await Navigator.push(context, MaterialPageRoute(
                         builder: (context) => CityScreen(),
                       ));
-                       print(comingCityName);
+                       if (comingCityName != null){
+                          var weatherData = await  WeatherModel().getWeatherDataWithCityName(comingCityName);
+                          updateUI(weatherData);
+//                       print(weatherData);
+                       }
+
                     },
                     child: Icon(
                       Icons.location_city,
