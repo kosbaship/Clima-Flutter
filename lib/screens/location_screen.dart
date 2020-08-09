@@ -88,10 +88,11 @@ class _LocationScreenState extends State<LocationScreen> {
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
+                    onPressed: () async {
+                       var comingCityName = await Navigator.push(context, MaterialPageRoute(
                         builder: (context) => CityScreen(),
                       ));
+                       print(comingCityName);
                     },
                     child: Icon(
                       Icons.location_city,
